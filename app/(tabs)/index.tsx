@@ -190,7 +190,7 @@ const App: React.FC = () => {
             </Text>
 
             <Button
-              title="Create Wisht List"
+              title="Create New Wisht"
               onPress={() => setIsModalVisible(true)}
               buttonStyle={styles.button}
             />

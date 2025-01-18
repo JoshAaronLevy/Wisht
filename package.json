@@ -6,7 +6,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios <54E4CA69-6A82-4A8D-88E4-ECA12F71CEC3>",
+    "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll"
   },
