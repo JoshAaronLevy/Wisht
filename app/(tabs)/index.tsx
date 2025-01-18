@@ -4,10 +4,7 @@ import {
   SafeAreaView,
   View,
   StyleSheet,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Pressable
+  TouchableOpacity
 } from 'react-native';
 import { Text, Input, Button } from 'react-native-elements';
 import Parse from 'parse/react-native.js';
@@ -18,24 +15,15 @@ import Toast from 'react-native-toast-message';
 import parseCredentials from '../../environments/keys';
 import NewWishlistModal from '@/components/NewWishlistModal';
 
-// ---------------------------------------------------------------------
-// 1. Parse Setup
-// ---------------------------------------------------------------------
 Parse.setAsyncStorage(AsyncStorage);
 Parse.initialize(parseCredentials.appId, parseCredentials.jsKey);
 Parse.serverURL = parseCredentials.serverUrl;
 
-// ---------------------------------------------------------------------
-// 2. TypeScript Types
-// ---------------------------------------------------------------------
 interface FormValues {
   email: string;
   password: string;
 }
 
-// ---------------------------------------------------------------------
-// 3. Yup Validation Schema
-// ---------------------------------------------------------------------
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .email('Enter a valid email address')
@@ -45,17 +33,11 @@ const validationSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
-// ---------------------------------------------------------------------
-// 4. Main Component
-// ---------------------------------------------------------------------
 const App: React.FC = () => {
   const [isLoginTab, setIsLoginTab] = React.useState(true);
   const [currentUser, setCurrentUser] = React.useState<Parse.User<Parse.Attributes> | null>(null);
-  const [loadingUser, setLoadingUser] = React.useState(true); // for initial user check
+  const [loadingUser, setLoadingUser] = React.useState(true);
 
-  // -------------------------------------------------------------------
-  // 4A. Check if there's already a logged-in user on app load
-  // -------------------------------------------------------------------
   React.useEffect(() => {
     (async () => {
       try {
@@ -69,9 +51,6 @@ const App: React.FC = () => {
     })();
   }, []);
 
-  // -------------------------------------------------------------------
-  // 4B. Toast Helper
-  // -------------------------------------------------------------------
   const showToast = (
     type: 'success' | 'error' | 'info',
     title: string,
@@ -84,14 +63,10 @@ const App: React.FC = () => {
     });
   };
 
-  // -------------------------------------------------------------------
-  // 4C. Handle Form Submission
-  // -------------------------------------------------------------------
   const handleFormSubmit = async (values: FormValues) => {
     const { email, password } = values;
 
     if (isLoginTab) {
-      // Try LOGIN
       try {
         await Parse.User.logIn(email, password);
         showToast('success', 'Login successful!', `Welcome, ${email}!`);
@@ -144,7 +119,6 @@ const App: React.FC = () => {
         await newUser.signUp();
         showToast('success', 'Signup successful!', 'You are now logged in!');
 
-        // Delay for toast
         const user = Parse.User.current();
         setTimeout(() => {
           setCurrentUser(user || null);
@@ -183,24 +157,15 @@ const App: React.FC = () => {
     }
   };
 
-  // -------------------------------------------------------------------
-  // 4D. Wishlist Modal State
-  // -------------------------------------------------------------------
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [wishlistName, setWishlistName] = React.useState('');
 
-  // Called when user taps "Create"
   const handleCreateWishlist = () => {
-    // In a real app, you'd create or save the wishlist to Parse or your backend
     showToast('success', 'Wishlist Created', `Name: ${wishlistName}`);
-    // reset local state
     setWishlistName('');
     setIsModalVisible(false);
   };
 
-  // -------------------------------------------------------------------
-  // 4E. Conditionally Render: If we have a user, show "Add New Wishlist"
-  // -------------------------------------------------------------------
   if (loadingUser) {
     return (
       <>
@@ -247,16 +212,12 @@ const App: React.FC = () => {
     );
   }
 
-  // -------------------------------------------------------------------
-  // If NOT logged in, show the form
-  // -------------------------------------------------------------------
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <Text h2 style={styles.title}>Wisht</Text>
 
-          {/* Tabs */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tab, isLoginTab && styles.tabActive]}
@@ -272,7 +233,6 @@ const App: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Form */}
           <Formik<FormValues>
             initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
@@ -331,9 +291,6 @@ const App: React.FC = () => {
 
 export default App;
 
-// ---------------------------------------------------------------------
-// 5. Styles
-// ---------------------------------------------------------------------
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -348,7 +305,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
   },
-  // Tab styles
   tabContainer: {
     flexDirection: 'row',
     marginBottom: 20,
@@ -368,7 +324,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  // Form styles
   formContainer: {
     width: '100%',
   },
@@ -376,11 +331,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#007bff',
     marginTop: 20,
   },
-
-  // Modal styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)', // semi-transparent background
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
